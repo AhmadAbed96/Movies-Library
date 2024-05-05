@@ -16,6 +16,15 @@ Add an image of your WRRC here
 4. git the data from Movie Data folder // (const data = require("./Movie Data/data.json"))
 5. send a requist from home and favorite page to the srever
 6. make a constructor for new data to send it to the home page 
+7. download axios and cors and requir it from documentation 
+8. made a route for (trending,search,discover,popular)
+9. made the functions to recieve the request and send a respond from the 3rd party API
+    
+
+## 3rd Party API 
+1. Find API
+2. Read the decumention 
+3. Make the request to 3rd API 
  
 ## Project Features
 <!-- What are the features included in you app -->
