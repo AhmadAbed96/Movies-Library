@@ -1,45 +1,62 @@
 // import axios from 'axios';
+"use strict"
+
+const Port = 3000;
+
+const url = 'postgressql://localhost:5432/movies'
+const {Client} = require("pg");
+const client = new Client(url);
+
 require('dotenv').config()
 const apiKey = process.env.API_KEY
 const express = require ("express");
 const app = express();
-const Port = 3000;
+const bodyParser = require('body-parser');
+
 const axios = require('axios');
 const cors = require("cors");
-app.use(cors());
+app.use(cors()); 
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
+
 // const data = require("./Movie Data/data.json");
 
 
-app.listen(Port,() =>{
-    console.log(`the server listen to ${Port}`)
-} )
-
 //routes    
 // app.get("/Home",datahandler)
+client.connect().then(() =>{
+
+    app.listen(Port,() =>{
+        console.log(`the server listen to ${Port}`)
+    } );
+})
+
 app.get("/favorite",handler);
 app.get("/trending",handleTrending);
 app.get("/search" , handleSearch);
 app.get("/discover",handlediscover);
 app.get("/popular",handlePopular);
+app.post("/addMovie",handleAdd);
+app.get("/getMovie",handleGet);
 app.get("*" , handleNotFound);
 
 
 //functions
 
 // function datahandler(req,res){
-//     let dataMovie = [];
-//      newMovie = new Movie(data.title,data.poster_path,data.overview)
-
-//      res.json(newMovie)
-// }
-
-
-function handlePopular(req,res){
-    const url = `https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}`;
-    axios.get(url)
-    .then(result =>{
-        let movie = result.data.results.map(x =>{
-            return new Movie(x.title,x.poster_path,x.overview)
+    //     let dataMovie = [];
+    //      newMovie = new Movie(data.title,data.poster_path,data.overview)
+    
+    //      res.json(newMovie)
+    // }
+    
+    
+    function handlePopular(req,res){
+        const url = `https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}`;
+        axios.get(url)
+        .then(result =>{
+            let movie = result.data.results.map(item =>{
+                return new Movie(item.title,item.poster_path,item.overview)
         })
         res.json(movie)
     })
@@ -109,6 +126,31 @@ function MovieApi(id,title,release_date,poster_path,overview){
     this.release_date = release_date;
     this.poster_path = poster_path;
     this.overview = overview;
+}
+
+
+
+function handleAdd(req,res){
+    console.log(req.body);
+    
+    const { title, poster_path, overview} = req.body
+    
+    let sql = 'INSERT INTO movie(title,poster_path,overview) VALUES($1, $2 , $3) RETURNING *;'
+    let values = [title , poster_path , overview]
+    client.query(sql, values)
+    .then(result =>{
+        console.log(result.rows);
+        return res.json(result.rows);
+    })
+    .catch()
+}
+
+function handleGet(req,res){
+    let sql = 'SELECT * from movie;'
+
+    client.query(sql).then((result) =>{
+        res.json(result.rows)
+    }).catch()
 }
 
 function handleNotFound(req,res){
