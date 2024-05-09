@@ -20,10 +20,6 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 
-app.get("/",homeHandler)
-app.get("/favorite",handler)
-app.get("*" , handleNotFound)
-
 
 //routes    
 client.connect().then(() =>{
@@ -45,6 +41,7 @@ app.delete("/deleteMovie/:id",deleteMovieHandler);
 app.put("/updateMovie/:id",updateHandler)
 app.put("/getMovie/:id",getHandler)
 app.get("*" , handleNotFound);
+
 
 
 
@@ -120,19 +117,6 @@ function handlediscover(req,res){
     })
 }
 
-function handlePopular(req,res){
-    const url = `https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}`;
-    axios.get(url)
-    .then(result =>{
-        let movie = result.data.results.map(item =>{
-            return new Movie(item.title,item.poster_path,item.overview)
-        })
-        res.json(movie)
-    })
-    .catch(error =>{
-        res.send("Inside catch")
-    })
-}
 
 function handleAdd(req,res){
     console.log(req.body);
@@ -167,35 +151,32 @@ function deleteMovieHandler(req,res){
     })
     .catch()
 }
-    
+
+
 function updateHandler(req,res){
-        const id = req.params.id;
-        const sql = `UPDATE movie SET title = $1, poster_path = $2 , overview = $3 where id = ${id} RETURNING *`
-        let values = [title , poster_path , overview]
-        client.query(sql, values)
-        .then(result =>{
-        console.log(result.rows);
-        return res.status(200).json(result.rows);
-    })
-    .catch()
+    const id = req.params.id;
+    const sql = `UPDATE movie SET title = $1, poster_path = $2 , overview = $3 where id = ${id} RETURNING *`
+    let values = [title , poster_path , overview]
+    client.query(sql, values)
+    .then(result =>{
+    console.log(result.rows);
+    return res.status(200).json(result.rows);
+})
+.catch()
 }
-
-
 
 function getHandler(req, res) {
     
-        const id = req.params.id
-        const sql = `SELECT * FROM movies WHERE movie_id = ${id}`
-        client.query(sql)
-        .then((result) => {
-            res.send(result.rows)
-        })
-        
-        .catch() 
-        
-    }
-
-
+    const id = req.params.id
+    const sql = `SELECT * FROM movies WHERE movie_id = ${id}`
+    client.query(sql)
+    .then((result) => {
+        res.send(result.rows)
+    })
+    
+    .catch() 
+    
+}
 
 
 function Movie(title,poster_path,overview){
