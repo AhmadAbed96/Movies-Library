@@ -19,11 +19,13 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
-// const data = require("./Movie Data/data.json");
+
+app.get("/",homeHandler)
+app.get("/favorite",handler)
+app.get("*" , handleNotFound)
 
 
 //routes    
-// app.get("/Home",datahandler)
 client.connect().then(() =>{
 
     app.listen(Port,() =>{
@@ -41,16 +43,12 @@ app.get("/getMovie",handleGet);
 app.get("*" , handleNotFound);
 
 
-//functions
+function homeHandler(req,res){
+    let dataMovie = [];
+     newMovie = new Movie(data.title,data.poster_path,data.overview)
 
-// function datahandler(req,res){
-    //     let dataMovie = [];
-    //      newMovie = new Movie(data.title,data.poster_path,data.overview)
-    
-    //      res.json(newMovie)
-    // }
-    
-    
+
+//functions
     function handlePopular(req,res){
         const url = `https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}`;
         axios.get(url)
