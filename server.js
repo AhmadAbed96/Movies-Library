@@ -8,7 +8,7 @@ app.listen(Port,() =>{
 } )
 
 //routes
-app.get("/Home",datahandler)
+app.get("/",homeHandler)
 app.get("/favorite",handler)
 app.get("*" , handleNotFound)
 
@@ -16,7 +16,7 @@ app.get("*" , handleNotFound)
 
 //functions
 
-function datahandler(req,res){
+function homeHandler(req,res){
     let dataMovie = [];
      newMovie = new Movie(data.title,data.poster_path,data.overview)
 
