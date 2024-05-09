@@ -27,19 +27,23 @@ app.get("*" , handleNotFound)
 
 //routes    
 client.connect().then(() =>{
-
+    
     app.listen(Port,() =>{
         console.log(`the server listen to ${Port}`)
     } );
 })
 
-app.get("/favorite",handler);
+app.get("/",homeHandler)
+app.get("/favorite",favhandler);
 app.get("/trending",handleTrending);
 app.get("/search" , handleSearch);
 app.get("/discover",handlediscover);
 app.get("/popular",handlePopular);
 app.post("/addMovie",handleAdd);
-app.get("/getMovie",handleGet);
+app.get("/getMovie",getAllHAndler);
+app.delete("/deleteMovie/:id",deleteMovieHandler);
+app.put("/updateMovie/:id",updateHandler)
+app.put("/getMovie/:id",getHandler)
 app.get("*" , handleNotFound);
 
 
@@ -47,6 +51,12 @@ function homeHandler(req,res){
     let dataMovie = [];
      newMovie = new Movie(data.title,data.poster_path,data.overview)
 
+
+function homeHandler(req,res){
+    let dataMovie = [];
+    newMovie = new Movie(data.title,data.poster_path,data.overview)
+    
+    res.json(newMovie)
 
 //functions
     function handlePopular(req,res){
@@ -61,9 +71,10 @@ function homeHandler(req,res){
     .catch(error =>{
         res.send("Inside catch")
     })
+
 }
 
-function handler(req,res) {
+function favhandler(req,res) {
     res.send("Wellcome to favorite page")
 }
 
@@ -95,6 +106,7 @@ function handleSearch(req,res){
     .catch()
 }
 
+
 function handlediscover(req,res){
     const url = `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}`
     axios.get(url)
@@ -112,21 +124,19 @@ function handlediscover(req,res){
     })
 }
 
-function Movie(title,poster_path,overview){
-    this.title = title;
-    this.poster_path = poster_path;
-    this.overview = overview
+function handlePopular(req,res){
+    const url = `https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}`;
+    axios.get(url)
+    .then(result =>{
+        let movie = result.data.results.map(item =>{
+            return new Movie(item.title,item.poster_path,item.overview)
+        })
+        res.json(movie)
+    })
+    .catch(error =>{
+        res.send("Inside catch")
+    })
 }
-
-function MovieApi(id,title,release_date,poster_path,overview){
-    this.id = id ;
-    this.title = title;
-    this.release_date = release_date;
-    this.poster_path = poster_path;
-    this.overview = overview;
-}
-
-
 
 function handleAdd(req,res){
     console.log(req.body);
@@ -143,13 +153,69 @@ function handleAdd(req,res){
     .catch()
 }
 
-function handleGet(req,res){
+function getAllHAndler(req,res){
     let sql = 'SELECT * from movie;'
 
     client.query(sql).then((result) =>{
         res.json(result.rows)
     }).catch()
 }
+
+function deleteMovieHandler(req,res){
+    const id = req.params.id;
+    const sql = `DELETE FROM movie where id = ${id} RETURNING *`
+    
+    client.query(sql)
+    .then((result) =>{
+        res.status(204).json({})
+    })
+    .catch()
+}
+    
+function updateHandler(req,res){
+        const id = req.params.id;
+        const sql = `UPDATE movie SET title = $1, poster_path = $2 , overview = $3 where id = ${id} RETURNING *`
+        let values = [title , poster_path , overview]
+        client.query(sql, values)
+        .then(result =>{
+        console.log(result.rows);
+        return res.status(200).json(result.rows);
+    })
+    .catch()
+}
+
+
+
+function getHandler(req, res) {
+    
+        const id = req.params.id
+        const sql = `SELECT * FROM movies WHERE movie_id = ${id}`
+        client.query(sql)
+        .then((result) => {
+            res.send(result.rows)
+        })
+        
+        .catch() 
+        
+    }
+
+
+
+
+function Movie(title,poster_path,overview){
+    this.title = title;
+    this.poster_path = poster_path;
+    this.overview = overview
+}
+
+function MovieApi(id,title,release_date,poster_path,overview){
+    this.id = id ;
+    this.title = title;
+    this.release_date = release_date;
+    this.poster_path = poster_path;
+    this.overview = overview;
+}
+
 
 function handleNotFound(req,res){
     res.status(404).send("Not found")
