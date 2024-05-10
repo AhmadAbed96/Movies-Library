@@ -19,7 +19,7 @@ Add an image of your WRRC here
 7. download axios and cors and requir it from documentation 
 8. made a route for (trending,search,discover,popular)
 9. made the functions to recieve the request and send a respond from the 3rd party API
-    
+10. made schema file to make DB     
 
 ## 3rd Party API 
 1. Find API
