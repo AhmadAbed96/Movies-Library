@@ -1,5 +1,6 @@
 // import axios from 'axios';
 "use strict"
+const data = require("./Movie Data/data.json");
 
 const Port = 3000;
 
@@ -44,12 +45,11 @@ app.get("*" , handleNotFound);
 
 
 
-
 function homeHandler(req,res){
-    let dataMovie = [];
-    newMovie = new Movie(data.title,data.poster_path,data.overview)
-    
+    let newMovie = new Movie(data.title,data.poster_path,data.overview)
+
     res.json(newMovie)
+
 }
 //functions
     function handlePopular(req,res){
@@ -102,12 +102,15 @@ function handleSearch(req,res){
 
 function handlediscover(req,res){
     const url = `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}`
-    axios.get(url)
-    .then((result) => {
-        console.log(result);
-        let movieApi = result.data.results.map(x =>{
-            return new Movie(x.title,x.poster_path,x.overview)
-        })
+        console.log("step 1");
+        axios.get(url)
+        .then((result) => {
+            console.log("step 2");
+            console.log(result);
+            let movieApi = result.data.results.map(x =>{
+                return new Movie(x.title,x.poster_path,x.overview)
+            })
+            console.log("step 3");
         // res.send("inside then");
         res.json(movieApi);
     })
