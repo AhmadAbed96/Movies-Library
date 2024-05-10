@@ -47,17 +47,13 @@ app.put("/getMovie/:id",getHandler)
 app.get("*" , handleNotFound);
 
 
-function homeHandler(req,res){
-    let dataMovie = [];
-     newMovie = new Movie(data.title,data.poster_path,data.overview)
-
 
 function homeHandler(req,res){
     let dataMovie = [];
     newMovie = new Movie(data.title,data.poster_path,data.overview)
     
     res.json(newMovie)
-
+}
 //functions
     function handlePopular(req,res){
         const url = `https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}`;
