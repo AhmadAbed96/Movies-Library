@@ -40,7 +40,7 @@ app.post("/addMovie",handleAdd);
 app.get("/getMovie",getAllHAndler);
 app.delete("/deleteMovie/:id",deleteMovieHandler);
 app.put("/updateMovie/:id",updateHandler)
-app.put("/getMovie/:id",getHandler)
+app.get("/getMovie/:id",getHandler)
 app.get("*" , handleNotFound);
 
 
