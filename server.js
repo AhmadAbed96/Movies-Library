@@ -36,15 +36,20 @@ app.get("/search" , handleSearch);
 app.get("/discover",handlediscover);
 app.get("/popular",handlePopular);
 app.post("/addMovie",handleAdd);
+app.get("/getMovie",getAllHAndler);
+app.delete("/deleteMovie/:id",deleteMovieHandler);
+app.put("/updateMovie/:id",updateHandler)
+app.get("/getMovie/:id",getHandler)
 app.get("*" , handleNotFound);
-
 
 
 
 function homeHandler(req,res){
    let newMovie = new Movie(dataMovie.title,dataMovie.poster_path,dataMovie.overview)
     
+
     res.json(newMovie)
+
 }
 //functions
     function handlePopular(req,res){
@@ -97,12 +102,15 @@ function handleSearch(req,res){
 
 function handlediscover(req,res){
     const url = `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}`
-    axios.get(url)
-    .then((result) => {
-        console.log(result);
-        let movieApi = result.data.results.map(x =>{
-            return new Movie(x.title,x.poster_path,x.overview)
-        })
+        console.log("step 1");
+        axios.get(url)
+        .then((result) => {
+            console.log("step 2");
+            console.log(result);
+            let movieApi = result.data.results.map(x =>{
+                return new Movie(x.title,x.poster_path,x.overview)
+            })
+            console.log("step 3");
         // res.send("inside then");
         res.json(movieApi);
     })
@@ -112,19 +120,6 @@ function handlediscover(req,res){
     })
 }
 
-function handlePopular(req,res){
-    const url = `https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}`;
-    axios.get(url)
-    .then(result =>{
-        let movie = result.data.results.map(item =>{
-            return new Movie(item.title,item.poster_path,item.overview)
-        })
-        res.json(movie)
-    })
-    .catch(error =>{
-        res.send("Inside catch")
-    })
-}
 
 function handleAdd(req,res){
     console.log(req.body);
@@ -141,14 +136,50 @@ function handleAdd(req,res){
     .catch()
 }
 
+function getAllHAndler(req,res){
+    let sql = 'SELECT * from movie;'
 
+    client.query(sql).then((result) =>{
+        res.json(result.rows)
+    }).catch()
+}
+
+function deleteMovieHandler(req,res){
+    const id = req.params.id;
+    const sql = `DELETE FROM movie where id = ${id} RETURNING *`
     
+    client.query(sql)
+    .then((result) =>{
+        res.status(204).json({})
+    })
+    .catch()
+}
 
 
+function updateHandler(req,res){
+    const id = req.params.id;
+    const sql = `UPDATE movie SET title = $1, poster_path = $2 , overview = $3 where id = ${id} RETURNING *`
+    let values = [title , poster_path , overview]
+    client.query(sql, values)
+    .then(result =>{
+    console.log(result.rows);
+    return res.status(200).json(result.rows);
+})
+.catch()
+}
 
-
-
-
+function getHandler(req, res) {
+    
+    const id = req.params.id
+    const sql = `SELECT * FROM movies WHERE movie_id = ${id}`
+    client.query(sql)
+    .then((result) => {
+        res.send(result.rows)
+    })
+    
+    .catch() 
+    
+}
 
 
 function Movie(title,poster_path,overview){

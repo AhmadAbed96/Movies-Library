@@ -4,5 +4,7 @@ CREATE TABLE movie(
     overview varchar(255),
     id serial primary key  ,
     comment varchar(255)
+
 )
+-- add new column 
 

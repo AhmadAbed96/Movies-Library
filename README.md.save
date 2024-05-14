@@ -14,7 +14,7 @@ Add an image of your WRRC here
 2. npm install express
 3. use express package //(const express = require ("express"))
 4. git the data from Movie Data folder // (const data = require("./Movie Data/data.json"))
-5. send a requist from home and favorite page to the srever
+e unnecessary line from README.md and comment column from schema.sql"5. send a requist from home and favorite page to the srever
 6. make a constructor for new data to send it to the home page 
 7. download axios and cors and requir it from documentation 
 8. made a route for (trending,search,discover,popular)
