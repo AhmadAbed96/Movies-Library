@@ -1,9 +1,8 @@
 // import axios from 'axios';
 "use strict"
-const data = require("./Movie Data/data.json");
 
 const Port = 3000;
-
+const dataMovie = require("./Movie Data/data.json")
 const url = 'postgressql://localhost:5432/movies'
 const {Client} = require("pg");
 const client = new Client(url);
@@ -46,7 +45,8 @@ app.get("*" , handleNotFound);
 
 
 function homeHandler(req,res){
-    let newMovie = new Movie(data.title,data.poster_path,data.overview)
+   let newMovie = new Movie(dataMovie.title,dataMovie.poster_path,dataMovie.overview)
+    
 
     res.json(newMovie)
 
@@ -124,7 +124,8 @@ function handlediscover(req,res){
 function handleAdd(req,res){
     console.log(req.body);
     
-    const { title, poster_path, overview ,comment} = req.body
+
+    const { title, poster_path, overview , comment} = req.body
     
     let sql = 'INSERT INTO movie(title,poster_path,overview, comment) VALUES($1, $2 , $3 , $4) RETURNING *;'
     let values = [title , poster_path , overview , comment]
