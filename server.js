@@ -124,6 +124,7 @@ function handlediscover(req,res){
 function handleAdd(req,res){
     console.log(req.body);
     
+
     const { title, poster_path, overview , comment} = req.body
     
     let sql = 'INSERT INTO movie(title,poster_path,overview, comment) VALUES($1, $2 , $3 , $4) RETURNING *;'
@@ -158,8 +159,9 @@ function deleteMovieHandler(req,res){
 
 function updateHandler(req,res){
     const id = req.params.id;
-    const sql = `UPDATE movie SET title = $1, poster_path = $2 , overview = $3 where id = ${id} RETURNING *`
-    let values = [title , poster_path , overview]
+    const { title, poster_path, overview, comment } = req.body;
+    const sql = `UPDATE movie SET title = $1, poster_path = $2, overview = $3, comment = $4 WHERE id = ${id} RETURNING *`;
+    let values = [title , poster_path , overview, comment]
     client.query(sql, values)
     .then(result =>{
     console.log(result.rows);
@@ -171,7 +173,7 @@ function updateHandler(req,res){
 function getHandler(req, res) {
     
     const id = req.params.id
-    const sql = `SELECT * FROM movies WHERE movie_id = ${id}`
+    const sql = `SELECT * FROM movie WHERE id = ${id}`
     client.query(sql)
     .then((result) => {
         res.send(result.rows)
